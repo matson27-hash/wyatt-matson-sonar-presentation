@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AC/DC Content Strategy — Sonar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary:    #FFFFFF;
+    --bg-secondary:  #F3F6FB;
+    --bg-tertiary:   #E8EEF7;
+    --bg-card:       #F3F6FB;
+    --orange:        #F05033;
+    --orange-light:  #C94020;
+    --orange-dim:    rgba(240,80,51,0.12);
+    --blue:          #1C6EC7;
+    --blue-light:    #1558A0;
+    --blue-dim:      rgba(28,110,199,0.10);
+    --green:         #1A9E6A;
+    --green-dim:     rgba(26,158,106,0.12);
+    --purple:        #7B4FCC;
+    --purple-dim:    rgba(123,79,204,0.12);
+    --amber:         #B87A00;
+    --amber-dim:     rgba(184,122,0,0.12);
+    --text-primary:  #35004C;
+    --text-secondary:#5C6B8A;
+    --text-muted:    #8A96AA;
+    --border:        #D8E2F0;
+    --border-light:  #C4D3E8;
+    --font:          'Mulish', -apple-system, sans-serif;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg-primary);
+    font-family: var(--font);
+    color: var(--text-primary);
+    overflow: hidden;
+  }
+
+  /* All headlines and accents use consistent blue */
+  .slide-headline { color: #1C6EC7 !important; }
+  .slide-headline .accent { color: #1C6EC7 !important; }
+
+  /* PRESENTATION WRAPPER */
+  .deck {
+    width: 100vw; height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* SLIDES */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 36px 64px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  /* HEADER BAR */
+  .slide-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 36px;
+    flex-shrink: 0;
+  }
+  .logo img { height: 28px; width: auto; display: block; }
+  .slide-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #1C6EC7;
+    border: 1px solid rgba(28,110,199,0.2);
+    background: rgba(28,110,199,0.08);
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+
+  /* SLIDE CONTENT */
+  .slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* TYPOGRAPHY */
+  .slide-headline {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+  .slide-headline .accent { color: var(--orange); }
+  .slide-subhead {
+    font-size: 15px;
+    font-weight: 400;
+    color: #35004C;
+    line-height: 1.6;
+    margin-bottom: 28px;
+    max-width: 680px;
+    opacity: 0.75;
+  }
+  .section-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  /* PILL BADGES */
+  .pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  .pill-top    { background: var(--green-dim);  color: var(--green); }
+  .pill-mid    { background: var(--blue-dim);   color: var(--blue); }
+  .pill-bottom { background: var(--purple-dim); color: var(--purple); }
+  .pill-all    { background: var(--orange-dim); color: var(--orange); }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+
+  /* NAVIGATION */
+  .nav {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 100;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 16px;
+    box-shadow: 0 2px 12px rgba(53,0,76,0.08);
+  }
+  .nav-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-light);
+    color: var(--text-primary);
+  }
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .nav-counter {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    min-width: 40px;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+  .nav-dots {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border-light);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .nav-dot.active {
+    background: var(--orange);
+    width: 16px;
+    border-radius: 3px;
+  }
+
+  /* ===================== */
+  /* SLIDE 1: STRATEGIC FRAME */
+  /* ===================== */
+  .s1-diagram {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+    margin-top: 8px;
+  }
+  .s1-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .s1-asset {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    width: 240px;
+  }
+  .s1-asset-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 6px;
+  }
+  .s1-asset-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+  .s1-arrow {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 0 24px;
+  }
+  .s1-arrow-line {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--border), var(--orange), var(--border));
+    position: relative;
+  }
+  .s1-arrow-line::after {
+    content: '';
+    position: absolute;
+    right: -1px; top: 50%;
+    transform: translateY(-50%);
+    border: 8px solid transparent;
+    border-left-color: var(--orange);
+  }
+  .s1-tension {
+    background: var(--orange-dim);
+    border: 1px solid rgba(240,80,51,0.3);
+    border-radius: 8px;
+    padding: 10px 16px;
+    position: absolute;
+    top: -36px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--orange);
+  }
+  .s1-outputs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .s1-output {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    width: 280px;
+    border-left: 3px solid var(--orange);
+  }
+  .s1-output-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .s1-output-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .s1-stat-bar {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .s1-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .s1-stat-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--orange);
+    line-height: 1;
+  }
+  .s1-stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* ===================== */
+  /* SLIDE 2: AUDIENCE TRUTH */
+  /* ===================== */
+  .s2-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    flex: 1;
+    min-height: 0;
+  }
+  .s2-col {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .s2-col-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .s2-col-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .s2-col-icon.dev   { background: var(--blue-dim); }
+  .s2-col-icon.exec  { background: var(--orange-dim); }
+  .s2-col-title { font-size: 16px; font-weight: 700; }
+  .s2-row-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .s2-row-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+  .s2-quote {
+    background: rgba(28,110,199,0.06);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1558A0;
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .s2-quote.exec-quote { border-left-color: var(--orange); color: #C94020; background: rgba(240,80,51,0.06); }
+  .s2-data {
+    background: rgba(184,122,0,0.08);
+    border: 1px solid rgba(184,122,0,0.2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8A6000;
+    line-height: 1.5;
+    margin-top: auto;
+  }
+  .s2-data .data-source {
+    font-size: 10px;
+    font-weight: 500;
+    opacity: 0.75;
+    margin-top: 4px;
+  }
+
+  /* ===================== */
+  /* SLIDE 3: TWO TRACKS */
+  /* ===================== */
+  .s3-tracks {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+  }
+  .s3-track {
+    flex: 1;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .s3-track-label {
+    flex-shrink: 0;
+    width: 140px;
+  }
+  .s3-track-name {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .s3-track-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+  .s3-nodes {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+  }
+  .s3-node {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    flex: 1;
+    line-height: 1.3;
+    position: relative;
+  }
+  .s3-node::after {
+    content: '→';
+    position: absolute;
+    right: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 13px;
+    z-index: 1;
+  }
+  .s3-node:last-child::after { display: none; }
+  .s3-node-sub {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+  .s3-track.awareness  { border-left: 3px solid var(--blue); }
+  .s3-track.awareness .s3-track-name { color: var(--blue); }
+  .s3-track.awareness .s3-node { border-color: rgba(28,110,199,0.2); }
+  .s3-track.conversion { border-left: 3px solid var(--orange); }
+  .s3-track.conversion .s3-track-name { color: var(--orange); }
+  .s3-track.conversion .s3-node { border-color: rgba(240,80,51,0.2); }
+  .s3-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .s3-connector::before, .s3-connector::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    border-top: 1px dashed var(--border-light);
+  }
+
+  /* ===================== */
+  /* SLIDE 4: MATRIX */
+  /* ===================== */
+  .matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    flex: 1;
+    min-height: 0;
+  }
+  .matrix-table thead tr {
+    background: #E8EEF7;
+  }
+  .matrix-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #1C6EC7;
+    border-bottom: 1px solid var(--border);
+  }
+  .matrix-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    line-height: 1.4;
+    color: #35004C;
+  }
+  .matrix-table tr:last-child td { border-bottom: none; }
+  .matrix-table tbody tr {
+    background: #FFFFFF;
+    transition: background 0.15s;
+  }
+  .matrix-table tbody tr:nth-child(odd) {
+    background: #F3F6FB;
+  }
+  .matrix-table tbody tr:hover {
+    background: #E8EEF7;
+  }
+  .channel-name {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .channel-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .cta-link {
+    font-size: 11px;
+    color: var(--blue);
+    font-weight: 600;
+  }
+  .tone-text {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .asset-text {
+    font-size: 11px;
+    color: var(--text-primary);
+  }
+
+  /* ===================== */
+  /* SLIDE 5: DEV COMMUNITIES */
+  /* ===================== */
+  .s5-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+  }
+  .s5-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .s5-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .s5-card-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .s5-card-title { font-size: 16px; font-weight: 700; }
+  .s5-card-stage { font-size: 10px; color: var(--blue); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+  .s5-rule-block {
+    display: flex;
+    gap: 10px;
+  }
+  .s5-rule-indicator {
+    width: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    align-self: stretch;
+  }
+  .s5-rule-indicator.works  { background: var(--blue); }
+  .s5-rule-indicator.avoid  { background: var(--orange); }
+  .s5-rule-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .s5-rule-label.works { color: var(--blue); }
+  .s5-rule-label.avoid { color: var(--orange); }
+  .s5-rule-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .s5-hook {
+    background: rgba(28,110,199,0.07);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1558A0;
+    font-style: italic;
+    margin-top: auto;
+  }
+
+  /* ===================== */
+  /* SLIDE 6: CALENDAR */
+  /* ===================== */
+  .s6-timeline {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+  }
+  .s6-hero-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .s6-hero-asset {
+    background: var(--orange-dim);
+    border: 1px solid rgba(240,80,51,0.3);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--orange);
+  }
+  .s6-arrow-down {
+    color: var(--text-muted);
+    font-size: 18px;
+    margin: 0 8px;
+  }
+  .s6-phases {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+  }
+  .s6-phase {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    flex: 1;
+  }
+  .s6-phase-meta {
+    width: 120px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .s6-phase-weeks {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #35004C;
+  }
+  .s6-phase-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #F05033;
+    margin-top: 3px;
+  }
+  .s6-phase-bar {
+    flex: 1;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .s6-phase-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+  .s6-phase-1 { border-left: 3px solid var(--blue); }
+  .s6-phase-2 { border-left: 3px solid var(--blue); }
+  .s6-phase-3 { border-left: 3px solid var(--orange); }
+  .s6-phase-4 { border-left: 3px solid var(--purple); }
+  .s6-phase-5 { border-left: 3px solid var(--amber); }
+
+  /* ===================== */
+  /* SLIDE 7: MEASUREMENT */
+  /* ===================== */
+  .s7-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    flex: 1;
+    min-height: 0;
+  }
+  .s7-col {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .s7-col-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .s7-col-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .s7-col-title { font-size: 14px; font-weight: 800; }
+  .s7-metric {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .s7-metric-bullet {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .s7-metric-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .s7-metric-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .s7-checkpoint-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .s7-checkpoint {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+  }
+  .s7-checkpoint-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .s7-checkpoint-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+
+  /* ACDC DIAGRAM SLIDE IMAGE */
+  .s-image-wrapper {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .s-image-wrapper img {
+    width: 100%;
+    display: block;
+  }
+
+  /* SLIDE 1 – include ACDC image */
+  .s1-acdc-img {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .s1-acdc-img img {
+    height: 180px;
+    width: auto;
+    display: block;
+  }
+
+  /* KEYBOARD HINT */
+  .key-hint {
+    position: fixed;
+    bottom: 22px;
+    right: 64px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ================================ -->
+  <!-- SLIDE 1: THE STRATEGIC FRAME     -->
+  <!-- ================================ -->
+  <div class="slide active" id="slide-1">
+    <div class="slide-header">
+      <div class="logo">
+        <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e39-41dc-abd9-a0e251e8d63f/Sonar%20%282%29.svg" alt="Sonar" style="height:28px;width:auto;display:block;">
+      </div>
+      <div class="slide-tag">Repurposing &amp; Impact Strategy</div>
+    </div>
+    <div class="slide-content">
+      <div class="slide-headline">Two hero assets. Two audiences.<br><span class="accent">One job:</span> turn reach into pipeline.</div>
+      
+      <div class="s1-diagram">
+        <div class="s1-inputs">
+          <div class="s1-asset">
+            <div class="s1-asset-label">Hero Asset 01</div>
+            <div class="s1-asset-title">Building Better Software: A New Blueprint for the Agentic SDLC</div>
+          </div>
+          <div class="s1-asset">
+            <div class="s1-asset-label">Hero Asset 02</div>
+            <div class="s1-asset-title">The Future is AC/DC: The Agent-Centric Development Cycle</div>
+          </div>
+        </div>
+        <div class="s1-arrow">
+          <div class="s1-tension">Reach ↔ Conversion Tension</div>
+          <div class="s1-arrow-line"></div>
+        </div>
+        <div class="s1-outputs">
+          <div class="s1-output">
+            <div class="s1-output-label">Output 01</div>
+            <div class="s1-output-title">Developer Community Credibility</div>
+          </div>
+          <div class="s1-output">
+            <div class="s1-output-label">Output 02</div>
+            <div class="s1-output-title">Qualified Pipeline &amp; Demo Requests</div>
+          </div>
+        </div>
+        <div class="s1-acdc-img" style="margin-left:24px;">
+          <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/7ec302f1-ae36-4b20-9bf1-1bbacb17cdd8/ac_dc_blog_hero_social_landscape_2x.webp" alt="AC/DC" onerror="this.style.display='none'">
+        </div>
+      </div>
+      <div class="s1-stat-bar">
+        <div class="s1-stat">
+          <div class="s1-stat-num">7M+</div>
+          <div class="s1-stat-label">Developers using Sonar</div>
+        </div>
+        <div class="s1-stat">
+          <div class="s1-stat-num">44%</div>
+          <div class="s1-stat-label">Fewer AI-caused outages for customers</div>
+        </div>
+        <div class="s1-stat">
+          <div class="s1-stat-num">750B</div>
+          <div class="s1-stat-label">Lines of code analyzed daily</div>
+        </div>
+        <div class="s1-stat">
+          <div class="s1-stat-num">96%</div>
+          <div class="s1-stat-label">Of devs don't fully trust AI code output</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================ -->
+  <!-- SLIDE 2: THE AUDIENCE TRUTH      -->
+  <!-- ================================ -->
+  <div class="slide" id="slide-2">
+    <div class="slide-header">
+      <div class="logo">
+        <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e39-41dc-abd9-a0e251e8d63f/Sonar%20%282%29.svg" alt="Sonar" style="height:28px;width:auto;display:block;">
+      </div>
+      <div class="slide-tag">Persona Strategy</div>
+    </div>
+    <div class="slide-content">
+      <div class="slide-headline">The Audience <span class="accent">Truth</span></div>
+      <div class="slide-subhead">Both audiences are deeply skeptical of being marketed to. Same product, same message, completely different language.</div>
+      <div class="s2-grid">
+        <div class="s2-col">
+          <div class="s2-col-header">
+            <div class="s2-col-icon dev">💻</div>
+            <div>
+              <div class="s2-col-title">The Developer</div>
+              <div style="font-size:11px;color:var(--blue);font-weight:600;">Skeptical. Technical. Marketing-averse.</div>
+            </div>
+          </div>
+          <div>
+            <div class="s2-row-label">Primary Pain</div>
+            <div class="s2-row-value">AI-generated code they can't fully trust, and no reliable framework to verify it at scale.</div>
+          </div>
+          <div>
+            <div class="s2-row-label">What Resonates</div>
+            <div class="s2-row-value">Guide → Generate → Verify → Solve. A workflow that gives them control and accountability back.</div>
+          </div>
+          <div class="s2-quote">"Guide your agents. Verify their output. Fix what breaks. Repeat."</div>
+          <div class="s2-data">
+            📊 <strong>96%</strong> of developers don't fully trust AI output. Only <strong>48%</strong> always verify before committing.
+            <div class="data-source">Source: Sonar 2026 State of Code Developer Survey</div>
+          </div>
+        </div>
+        <div class="s2-col">
+          <div class="s2-col-header">
+            <div class="s2-col-icon exec">👔</div>
+            <div>
+              <div class="s2-col-title">The C-Suite / Eng. Leader</div>
+              <div style="font-size:11px;color:var(--orange);font-weight:600;">Risk-focused. Outcome-driven. Vendor-fatigued.</div>
+            </div>
+          </div>
+          <div>
+            <div class="s2-row-label">Primary Pain</div>
+            <div class="s2-row-value">Business risk from AI-accelerated development they can't see or audit, at 10x the volume.</div>
+          </div>
+          <div>
+            <div class="s2-row-label">What Resonates</div>
+            <div class="s2-row-value">44% reduction in AI-caused outages. Verification as governance and compliance, not just dev tooling.</div>
+          </div>
+          <div class="s2-quote exec-quote">"AI moves fast. Unverified code moves faster. Sonar customers are 44% less likely to experience an AI-caused outage."</div>
+          <div class="s2-data">
+            📊 <strong>42%</strong> of code is currently AI-generated or assisted — developers predict that share will increase by over half by 2027.
+            <div class="data-source">Source: Sonar 2026 State of Code Developer Survey</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================ -->
+  <!-- SLIDE 3: TWO-TRACK SYSTEM        -->
+  <!-- ================================ -->
+  <div class="slide" id="slide-3">
+    <div class="slide-header">
+      <div class="logo">
+        <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e39-41dc-abd9-a0e251e8d63f/Sonar%20%282%29.svg" alt="Sonar" style="height:28px;width:auto;display:block;">
+      </div>
+      <div class="slide-tag">Strategic Architecture</div>
+    </div>
+    <div class="slide-content">
+      <div class="slide-headline">The <span class="accent">Two-Track</span> System</div>
+      <div class="slide-subhead">This content strategy maps how someone moves from first touch to conversion, using Sonar's existing content infrastructure at every stage.</div>
+      <div class="s3-tracks">
+        <div class="s3-track awareness">
+          <div class="s3-track-label">
+            <div class="s3-track-name">Track 1</div>
+            <div class="s3-track-name" style="font-size:14px;">Awareness Engine</div>
+            <div class="s3-track-desc">Built for reach. Zero selling.</div>
+          </div>
+          <div class="s3-nodes">
+            <div class="s3-node">LinkedIn<br><span class="s3-node-sub">44% stat card</span></div>
+            <div style="width:32px;flex-shrink:0;"></div>
+            <div class="s3-node">X / Twitter<br><span class="s3-node-sub">AC/DC threads</span></div>
+            <div style="width:32px;flex-shrink:0;"></div>
+            <div class="s3-node">YouTube Shorts<br><span class="s3-node-sub">AC/DC explainer</span></div>
+            <div style="width:32px;flex-shrink:0;"></div>
+            <div class="s3-node">Reddit / HN<br><span class="s3-node-sub">Data-led posts</span></div>
+            <div style="width:32px;flex-shrink:0;"></div>
+            <div class="s3-node">Dev.to<br><span class="s3-node-sub">Death of CI essay</span></div>
+          </div>
+        </div>
+        <div class="s3-connector">Awareness drives capture → capture enters the conversion funnel</div>
+        <div class="s3-track conversion">
+          <div class="s3-track-label">
+            <div class="s3-track-name">Track 2</div>
+            <div class="s3-track-name" style="font-size:14px;">Conversion Infrastructure</div>
+            <div class="s3-track-desc">Named Sonar assets. Already built.</div>
+          </div>
+          <div class="s3-nodes">
+            <div class="s3-node">State of Code<br><span class="s3-node-sub">Free download</span></div>
+            <div style="width:32px;flex-shrink:0;"></div>
+            <div class="s3-node">AC/DC Playbook<br><span class="s3-node-sub">Newsletter series</span></div>
+            <div style="width:32px;flex-shrink:0;"></div>
+            <div class="s3-node">Live Webinar<br><span class="s3-node-sub">State of Code 2026</span></div>
+            <div style="width:32px;flex-shrink:0;"></div>
+            <div class="s3-node">ROI Calculator<br><span class="s3-node-sub">Self-qualify first</span></div>
+            <div style="width:32px;flex-shrink:0;"></div>
+            <div class="s3-node">Request Demo<br><span class="s3-node-sub">SonarQube</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:12px 16px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-secondary);font-weight:500;flex-shrink:0;">
+        💡 <strong style="color:var(--text-primary);">Key insight:</strong> This strategy doesn't require building new conversion infrastructure from scratch. It requires activating what Sonar already has — and routing the right audience to the right asset at the right moment.
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================ -->
+  <!-- SLIDE 4: CHANNEL-TO-ASSET MATRIX -->
+  <!-- ================================ -->
+  <div class="slide" id="slide-4">
+    <div class="slide-header">
+      <div class="logo">
+        <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e39-41dc-abd9-a0e251e8d63f/Sonar%20%282%29.svg" alt="Sonar" style="height:28px;width:auto;display:block;">
+      </div>
+      <div class="slide-tag">Multichannel Engine</div>
+    </div>
+    <div class="slide-content">
+      <div class="slide-headline">The <span class="accent">Channel-to-Asset</span> Fit Matrix</div>
+      <div style="margin-bottom:14px;flex-shrink:0;display:flex;gap:16px;align-items:center;">
+        <span style="font-size:12px;color:var(--text-muted);">Funnel stage:</span>
+        <span class="pill pill-top">Top — Awareness</span>
+        <span class="pill pill-mid">Mid — Consideration</span>
+        <span class="pill pill-bottom">Bottom — Conversion</span>
+      </div>
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th style="width:130px;">Channel</th>
+            <th>Persona</th>
+            <th>Stage</th>
+            <th>Primary Asset</th>
+            <th>Tone</th>
+            <th>CTA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="channel-name"><span class="channel-dot" style="background:var(--blue)"></span>LinkedIn</div></td>
+            <td><span style="font-size:11px;color:var(--text-secondary);">C-Suite / Eng. Leadership</span></td>
+            <td><span class="pill pill-mid">Mid</span></td>
+            <td class="asset-text">44% stat card, Keynote clip (60s)</td>
+            <td class="tone-text">Risk-first, outcome-focused</td>
+            <td class="cta-link">State of Code Report</td>
+          </tr>
+          <tr>
+            <td><div class="channel-name"><span class="channel-dot" style="background:var(--blue)"></span>X (Twitter)</div></td>
+            <td><span style="font-size:11px;color:var(--text-secondary);">Developers</span></td>
+            <td><span class="pill pill-top">Top</span></td>
+            <td class="asset-text">AC/DC framework thread</td>
+            <td class="tone-text">Direct, opinionated, technical</td>
+            <td class="cta-link">LLM Leaderboard</td>
+          </tr>
+          <tr>
+            <td><div class="channel-name"><span class="channel-dot" style="background:var(--blue)"></span>YouTube Shorts</div></td>
+            <td><span style="font-size:11px;color:var(--text-secondary);">Developers / Tech Leads</span></td>
+            <td><span class="pill pill-top">Top</span></td>
+            <td class="asset-text">30-60s AC/DC stage explainer</td>
+            <td class="tone-text">Educational, fast-paced</td>
+            <td class="cta-link">Interactive Demo</td>
+          </tr>
+          <tr>
+            <td><div class="channel-name"><span class="channel-dot" style="background:var(--blue)"></span>Reddit</div></td>
+            <td><span style="font-size:11px;color:var(--text-secondary);">Developers (skeptical)</span></td>
+            <td><span class="pill pill-top">Top</span></td>
+            <td class="asset-text">Data-led post, engineer AMA</td>
+            <td class="tone-text">Zero marketing, findings-first</td>
+            <td class="cta-link">State of Code</td>
+          </tr>
+          <tr>
+            <td><div class="channel-name"><span class="channel-dot" style="background:var(--blue)"></span>Hacker News</div></td>
+            <td><span style="font-size:11px;color:var(--text-secondary);">Sr. Devs / Tech Founders</span></td>
+            <td><span class="pill pill-top">Top</span></td>
+            <td class="asset-text">Show HN post, technical essay</td>
+            <td class="tone-text">Highly technical, invites critique</td>
+            <td class="cta-link">State of Code</td>
+          </tr>
+          <tr>
+            <td><div class="channel-name"><span class="channel-dot" style="background:var(--blue-light)"></span>Dev.to</div></td>
+            <td><span style="font-size:11px;color:var(--text-secondary);">Developers / Tech Leads</span></td>
+            <td><span class="pill pill-top">Top→Mid</span></td>
+            <td class="asset-text">"Death of CI" essay</td>
+            <td class="tone-text">Peer-to-peer, honest</td>
+            <td class="cta-link">State of Code Report</td>
+          </tr>
+          <tr>
+            <td><div class="channel-name"><span class="channel-dot" style="background:var(--blue)"></span>Newsletter</div></td>
+            <td><span style="font-size:11px;color:var(--text-secondary);">Tech Leads / Eng. Managers</span></td>
+            <td><span class="pill pill-mid">Mid</span></td>
+            <td class="asset-text">AC/DC Playbook (4-part series)</td>
+            <td class="tone-text">Trusted advisor, practical</td>
+            <td class="cta-link">Webinar Registration</td>
+          </tr>
+          <tr>
+            <td><div class="channel-name"><span class="channel-dot" style="background:var(--purple)"></span>Gated Content</div></td>
+            <td><span style="font-size:11px;color:var(--text-secondary);">CTO / VP Engineering</span></td>
+            <td><span class="pill pill-bottom">Bottom</span></td>
+            <td class="asset-text">Whitepaper, Solution Brief</td>
+            <td class="tone-text">Business risk, compliance</td>
+            <td class="cta-link">ROI Calculator + Demo</td>
+          </tr>
+          <tr>
+            <td><div class="channel-name"><span class="channel-dot" style="background:var(--orange)"></span>AC/DC Infographic</div></td>
+            <td><span style="font-size:11px;color:var(--text-secondary);">All personas</span></td>
+            <td><span class="pill pill-mid">Mid</span></td>
+            <td class="asset-text">Visual framework (new asset)</td>
+            <td class="tone-text">Visual-first, data-grounded</td>
+            <td class="cta-link">State of Code Report</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================ -->
+  <!-- SLIDE 5: WHERE DEVELOPERS LIVE   -->
+  <!-- ================================ -->
+  <div class="slide" id="slide-5">
+    <div class="slide-header">
+      <div class="logo">
+        <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e39-41dc-abd9-a0e251e8d63f/Sonar%20%282%29.svg" alt="Sonar" style="height:28px;width:auto;display:block;">
+      </div>
+      <div class="slide-tag">Developer Communities</div>
+    </div>
+    <div class="slide-content">
+      <div class="slide-headline">Where <span class="accent">Developers</span> Actually Live</div>
+      <div class="slide-subhead">These channels don't follow the same rules. You don't publish to them, you participate in them. The content is written, peer-to-peer, and data-first. Brand stays in the background until trust is earned.</div>
+      <div class="s5-grid">
+        <div class="s5-card">
+          <div class="s5-card-header">
+            <div>
+              <div class="s5-card-title">Reddit</div>
+              <div class="s5-card-stage">Top of Funnel · Awareness</div>
+            </div>
+          </div>
+          <div class="s5-rule-block">
+            <div class="s5-rule-indicator works"></div>
+            <div>
+              <div class="s5-rule-label works">Works</div>
+              <div class="s5-rule-text">Data-led posts written in an engineer's voice. AMA with a Sonar engineer. r/programming, r/devops, r/ExperiencedDevs.</div>
+            </div>
+          </div>
+          <div class="s5-rule-block">
+            <div class="s5-rule-indicator avoid"></div>
+            <div>
+              <div class="s5-rule-label avoid">Kills you</div>
+              <div class="s5-rule-text">Brand logos in the headline. CTAs in the body copy. Anything that reads like a press release.</div>
+            </div>
+          </div>
+          <div class="s5-hook">"We analyzed 750B lines of AI-generated code — here's where it consistently breaks down."</div>
+        </div>
+        <div class="s5-card">
+          <div class="s5-card-header">
+            <div>
+              <div class="s5-card-title">Hacker News</div>
+              <div class="s5-card-stage">Top of Funnel · Awareness</div>
+            </div>
+          </div>
+          <div class="s5-rule-block">
+            <div class="s5-rule-indicator works"></div>
+            <div>
+              <div class="s5-rule-label works">Works</div>
+              <div class="s5-rule-text">Show HN post framed as a technical idea inviting genuine critique. Written by a Sonar engineer, not a marketer.</div>
+            </div>
+          </div>
+          <div class="s5-rule-block">
+            <div class="s5-rule-indicator avoid"></div>
+            <div>
+              <div class="s5-rule-label avoid">Kills you</div>
+              <div class="s5-rule-text">Marketing language. Spin. Anything that doesn't invite pushback. The HN audience will destroy it.</div>
+            </div>
+          </div>
+          <div class="s5-hook">"Show HN: A framework for verifying AI-generated code at scale — Guide, Generate, Verify, Solve."</div>
+        </div>
+        <div class="s5-card">
+          <div class="s5-card-header">
+            <div>
+              <div class="s5-card-title">Dev.to</div>
+              <div class="s5-card-stage">Top → Mid Funnel · SEO Long-shelf</div>
+            </div>
+          </div>
+          <div class="s5-rule-block">
+            <div class="s5-rule-indicator works"></div>
+            <div>
+              <div class="s5-rule-label works">Works</div>
+              <div class="s5-rule-text">Long-form peer-to-peer essays. "The Death of CI" lives here. SEO-friendly, longer shelf life than Reddit or HN.</div>
+            </div>
+          </div>
+          <div class="s5-rule-block">
+            <div class="s5-rule-indicator avoid"></div>
+            <div>
+              <div class="s5-rule-label avoid">Kills you</div>
+              <div class="s5-rule-text">Repurposed blog posts that weren't written for a developer audience. Generic content with no POV.</div>
+            </div>
+          </div>
+          <div class="s5-hook">"The era of continuous integration is rapidly coming to an end. Here's what replaces it."</div>
+        </div>
+        <div class="s5-card">
+          <div class="s5-card-header">
+            <div>
+              <div class="s5-card-title">Discord</div>
+              <div class="s5-card-stage">Top of Funnel · Underutilized Channel</div>
+            </div>
+          </div>
+          <div class="s5-rule-block">
+            <div class="s5-rule-indicator works"></div>
+            <div>
+              <div class="s5-rule-label works">Works</div>
+              <div class="s5-rule-text">Organic presence in developer-focused servers over time. Where younger devs live. Very few B2B companies doing this well yet.</div>
+            </div>
+          </div>
+          <div class="s5-rule-block">
+            <div class="s5-rule-indicator avoid"></div>
+            <div>
+              <div class="s5-rule-label avoid">Kills you</div>
+              <div class="s5-rule-text">Joining a server, posting a link, and disappearing. Community channels require sustained participation to earn trust.</div>
+            </div>
+          </div>
+          <div class="s5-hook">Sonar's existing open-source community is the seed. Grow from there — don't cold-enter.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================ -->
+  <!-- SLIDE 6: 12-WEEK CALENDAR        -->
+  <!-- ================================ -->
+  <div class="slide" id="slide-6">
+    <div class="slide-header">
+      <div class="logo">
+        <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e39-41dc-abd9-a0e251e8d63f/Sonar%20%282%29.svg" alt="Sonar" style="height:28px;width:auto;display:block;">
+      </div>
+      <div class="slide-tag">Execution Plan</div>
+    </div>
+    <div class="slide-content">
+      <div class="slide-headline">The <span class="accent">12-Week</span> Release Calendar</div>
+      <div class="slide-subhead">Top of funnel content goes out first to build awareness and earn trust. Once an audience is engaged, we move them toward conversion through progressively deeper assets. Each wave has a specific job.</div>
+      <div class="s6-timeline">
+        <div class="s6-hero-row" style="flex-shrink:0;">
+          <div class="s6-hero-asset">Tariq Keynote</div>
+          <div class="s6-arrow-down">+</div>
+          <div class="s6-hero-asset">AC/DC Blog Post</div>
+          <div class="s6-arrow-down" style="font-size:14px;margin-left:8px;color:var(--text-muted);">→ cascade of derivative assets over 12 weeks</div>
+        </div>
+        <div class="s6-phases">
+          <div class="s6-phase">
+            <div class="s6-phase-meta">
+              <div class="s6-phase-weeks">Weeks 1–2</div>
+              <div class="s6-phase-name">Broadcast Launch</div>
+            </div>
+            <div class="s6-phase-bar s6-phase-1">
+              <div class="s6-phase-tag">LinkedIn stat card</div>
+              <div class="s6-phase-tag">YouTube Shorts clip</div>
+              <div class="s6-phase-tag">X/Twitter thread</div>
+              <div class="s6-phase-tag">Blog promotion</div>
+            </div>
+          </div>
+          <div class="s6-phase">
+            <div class="s6-phase-meta">
+              <div class="s6-phase-weeks">Weeks 3–4</div>
+              <div class="s6-phase-name">Community Seeding</div>
+            </div>
+            <div class="s6-phase-bar s6-phase-2">
+              <div class="s6-phase-tag">Reddit data post</div>
+              <div class="s6-phase-tag">Show HN post</div>
+              <div class="s6-phase-tag">Dev.to essay</div>
+              <div class="s6-phase-tag">Discord participation</div>
+            </div>
+          </div>
+          <div class="s6-phase">
+            <div class="s6-phase-meta">
+              <div class="s6-phase-weeks">Weeks 5–6</div>
+              <div class="s6-phase-name">New Asset Drop</div>
+            </div>
+            <div class="s6-phase-bar s6-phase-3">
+              <div class="s6-phase-tag">AC/DC Infographic</div>
+              <div class="s6-phase-tag">Solution Brief (One-Pager)</div>
+              <div class="s6-phase-tag">LinkedIn carousel</div>
+            </div>
+          </div>
+          <div class="s6-phase">
+            <div class="s6-phase-meta">
+              <div class="s6-phase-weeks">Weeks 7–9</div>
+              <div class="s6-phase-name" style="color:var(--orange);">Gated Content Launch</div>
+            </div>
+            <div class="s6-phase-bar s6-phase-4">
+              <div class="s6-phase-tag">AC/DC Whitepaper live</div>
+              <div class="s6-phase-tag">LinkedIn lead gen forms</div>
+              <div class="s6-phase-tag">Newsletter series begins</div>
+            </div>
+          </div>
+          <div class="s6-phase">
+            <div class="s6-phase-meta">
+              <div class="s6-phase-weeks">Weeks 10–12</div>
+              <div class="s6-phase-name" style="color:var(--orange);">Conversion &amp; Measurement</div>
+            </div>
+            <div class="s6-phase-bar s6-phase-5">
+              <div class="s6-phase-tag">Retargeting engaged non-converters</div>
+              <div class="s6-phase-tag">Email nurture sequences</div>
+              <div class="s6-phase-tag">30-day performance review</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================ -->
+  <!-- SLIDE 7: MEASUREMENT             -->
+  <!-- ================================ -->
+  <div class="slide" id="slide-7">
+    <div class="slide-header">
+      <div class="logo">
+        <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e39-41dc-abd9-a0e251e8d63f/Sonar%20%282%29.svg" alt="Sonar" style="height:28px;width:auto;display:block;">
+      </div>
+      <div class="slide-tag">Measurement Framework</div>
+    </div>
+    <div class="slide-content">
+      <div class="slide-headline">How We <span class="accent">Measure</span> It</div>
+      <div class="slide-subhead">Reach metrics and conversion metrics optimize for different things. Conflating them is how content strategies fail. We check both at 30 days and 90 days.</div>
+      <div class="s7-grid">
+        <div class="s7-col">
+          <div class="s7-col-header">
+            <div class="s7-col-title">Reach Metrics</div>
+            <div style="margin-left:auto;font-size:11px;color:var(--blue);font-weight:600;">Awareness track</div>
+          </div>
+          <div class="s7-metric">
+            <div class="s7-metric-bullet" style="background:var(--blue);"></div>
+            <div>
+              <div class="s7-metric-name">Video view-through rate</div>
+              <div class="s7-metric-desc">YouTube Shorts + LinkedIn clips — are people watching past 10 seconds?</div>
+            </div>
+          </div>
+          <div class="s7-metric">
+            <div class="s7-metric-bullet" style="background:var(--blue);"></div>
+            <div>
+              <div class="s7-metric-name">Community post engagement rate</div>
+              <div class="s7-metric-desc">Reddit upvotes, HN points, Dev.to reactions and comments — quality signals over volume.</div>
+            </div>
+          </div>
+          <div class="s7-metric">
+            <div class="s7-metric-bullet" style="background:var(--blue);"></div>
+            <div>
+              <div class="s7-metric-name">LinkedIn save and share rate</div>
+              <div class="s7-metric-desc">Save rate is the strongest intent signal on LinkedIn — stronger than likes.</div>
+            </div>
+          </div>
+          <div class="s7-metric">
+            <div class="s7-metric-bullet" style="background:var(--blue);"></div>
+            <div>
+              <div class="s7-metric-name">Newsletter open and click-through rate</div>
+              <div class="s7-metric-desc">Benchmark: 35%+ open rate for developer-focused B2B newsletters.</div>
+            </div>
+          </div>
+        </div>
+        <div class="s7-col">
+          <div class="s7-col-header">
+            <div class="s7-col-title">Conversion Metrics</div>
+            <div style="margin-left:auto;font-size:11px;color:var(--orange);font-weight:600;">Conversion track</div>
+          </div>
+          <div class="s7-metric">
+            <div class="s7-metric-bullet" style="background:var(--orange);"></div>
+            <div>
+              <div class="s7-metric-name">Email capture rate from gated content</div>
+              <div class="s7-metric-desc">State of Code Report and AC/DC Whitepaper — what % of visitors convert to leads?</div>
+            </div>
+          </div>
+          <div class="s7-metric">
+            <div class="s7-metric-bullet" style="background:var(--orange);"></div>
+            <div>
+              <div class="s7-metric-name">Demo requests attributed to AC/DC content</div>
+              <div class="s7-metric-desc">UTM-tagged links from every asset. This is the number that matters to sales.</div>
+            </div>
+          </div>
+          <div class="s7-metric">
+            <div class="s7-metric-bullet" style="background:var(--orange);"></div>
+            <div>
+              <div class="s7-metric-name">SonarQube trial signups from content traffic</div>
+              <div class="s7-metric-desc">Developer-track conversion. Content-influenced pipeline, not just direct.</div>
+            </div>
+          </div>
+          <div class="s7-metric">
+            <div class="s7-metric-bullet" style="background:var(--orange);"></div>
+            <div>
+              <div class="s7-metric-name">Pipeline influenced by AC/DC campaign</div>
+              <div class="s7-metric-desc">The full-funnel number. Multi-touch attribution from first touch to closed opportunity.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="s7-checkpoint-bar">
+        <div class="s7-checkpoint">
+          <div class="s7-checkpoint-label">30-Day Checkpoint</div>
+          <div class="s7-checkpoint-text">Catch what isn't working early. Optimize top-of-funnel channels based on engagement data. Adjust community content if Reddit/HN posts aren't landing.</div>
+        </div>
+        <div class="s7-checkpoint">
+          <div class="s7-checkpoint-label">90-Day Checkpoint</div>
+          <div class="s7-checkpoint-text">Evaluate full-quarter campaign. Attribute pipeline to content. Decide which assets to double down on for Q2.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================ -->
+  <!-- SLIDE 8: AI WORKFLOW             -->
+  <!-- ================================ -->
+  <div class="slide" id="slide-8">
+    <div class="slide-header">
+      <div class="logo">
+        <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/8e59bcad-6e39-41dc-abd9-a0e251e8d63f/Sonar%20%282%29.svg" alt="Sonar" style="height:28px;width:auto;display:block;">
+      </div>
+      <div class="slide-tag">AI-Augmented Workflow</div>
+    </div>
+    <div class="slide-content">
+      <div class="slide-headline">The <span class="accent">AI-Augmented</span> Workflow</div>
+      <div class="slide-subhead">AI handles velocity. Human judgment protects the Sonar voice. Every tool has a specific job and a clear stopping point where craft takes over.</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;min-height:0;">
+
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:22px 24px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+            <div style="width:38px;height:38px;background:var(--blue-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:var(--blue);flex-shrink:0;">Ds</div>
+            <div>
+              <div style="font-size:15px;font-weight:800;color:#35004C;">Descript</div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--orange);">Transcription + Clip Extraction</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Upload the keynote video. Auto-transcribe. Identify the strongest 30-60 second moments using word emphasis and scene detection. Export clips in 16:9, 9:16, and 1:1 simultaneously. Get a first draft of social copy pulled directly from the transcript.</div>
+        </div>
+
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:22px 24px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+            <div style="width:38px;height:38px;background:var(--blue-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:var(--blue);flex-shrink:0;">Cl</div>
+            <div>
+              <div style="font-size:15px;font-weight:800;color:#35004C;">Claude</div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--orange);">Ideation + Long-form Writing</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Write the AC/DC Playbook newsletter series. Refine and pressure-test social copy from Descript. Draft the Reddit and Hacker News posts in a peer-to-peer voice. Prompt with persona, funnel stage, and tone specified explicitly — output is reviewed against the Sonar voice before anything ships.</div>
+        </div>
+
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:22px 24px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+            <div style="width:38px;height:38px;background:var(--blue-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:var(--blue);flex-shrink:0;">Rw</div>
+            <div>
+              <div style="font-size:15px;font-weight:800;color:#35004C;">Runway</div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--orange);">Image + Video Creation</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Generate social graphics like the 44% stat card and the AC/DC infographic visual. Create simple animations and motion graphics for video content. Brand colors, font, and layout are locked to Sonar's visual identity before generation begins so output stays on-brand.</div>
+        </div>
+
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:22px 24px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+            <div style="width:38px;height:38px;background:var(--blue-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:var(--blue);flex-shrink:0;">EL</div>
+            <div>
+              <div style="font-size:15px;font-weight:800;color:#35004C;">ElevenLabs</div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--orange);">AI Voice Cloning</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">When video content requires narration or a consistent voice across assets, ElevenLabs enables AI voice cloning for scalable production. Used only with full consent from the voice owner. Particularly useful for creating localized or accessible versions of content without scheduling additional recording sessions.</div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:14px;padding:12px 20px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-secondary);font-weight:500;flex-shrink:0;display:flex;align-items:center;gap:16px;">
+        <span style="font-size:22px;font-weight:900;color:var(--orange);">75%</span>
+        <span>Traditional timeline for this full asset suite: 3 to 4 weeks. AI-augmented timeline: 5 to 7 days. The tools handle speed. The Sonar voice check before every publish handles quality.</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .deck -->
+
+<!-- NAVIGATION -->
+<div class="nav">
+  <button class="nav-btn" id="prev-btn" onclick="navigate(-1)" disabled>‹</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="nav-counter" id="counter">1 / 7</span>
+  <button class="nav-btn" id="next-btn" onclick="navigate(1)">›</button>
+</div>
+
+<div class="key-hint">← → to navigate</div>
+
+<script>
+  const totalSlides = 8;
+  let current = 1;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= totalSlides; i++) {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    if (n < 1 || n > totalSlides) return;
+    const prev = document.getElementById('slide-' + current);
+    prev.classList.remove('active');
+    prev.classList.add('exit');
+    setTimeout(() => prev.classList.remove('exit'), 350);
+    current = n;
+    const next = document.getElementById('slide-' + current);
+    next.classList.add('active');
+    // Update dots
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current - 1);
+    });
+    // Update counter
+    document.getElementById('counter').textContent = current + ' / ' + totalSlides;
+    // Update buttons
+    document.getElementById('prev-btn').disabled = current === 1;
+    document.getElementById('next-btn').disabled = current === totalSlides;
+  }
+
+  function navigate(dir) { goTo(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+  });
+</script>
+</body>
+</html>
